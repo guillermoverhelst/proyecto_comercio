@@ -1,3 +1,11 @@
+from django.http import HttpResponse
 from django.shortcuts import render
+#from usuarios import usuario
+def productos(request):
+    return render(request, "productos.html")
 
-# Create your views here.
+def registro(request):
+    return render(request, "registro.html")
+    
+def inicio_sesion(request):
+    return render(request,"inicio_sesion.html")
