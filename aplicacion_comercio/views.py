@@ -1,17 +1,14 @@
 from django.http import HttpResponse
 from django.template import Template,Context,loader
-
+from django.shortcuts import render
+#from usuarios import usuario
 def productos(request):
-    documento = loader.get_template('productos.html')
-    documento = documento.render()
-    return HttpResponse(documento)
+    return render(request, "productos.html")
 
 def registro(request):
-    documento = loader.get_template('registro.html')
-    documento = documento.render()
-    return HttpResponse(documento)
+    return render(request, "registro.html")
 
+
+    
 def inicio_sesion(request):
-    documento = loader.get_template('inicio_sesion.html')
-    documento = documento.render()
-    return HttpResponse(documento)
+    return render(request,"inicio_sesion.html")
