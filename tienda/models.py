@@ -6,6 +6,8 @@ class usuario(models.Model):
     correo = models.EmailField()
     clave = models.CharField(max_length=20)  
     
+    def __str__(self):
+        return self.nombre
     def agregar_producto_a_carrito(producto,cantidad):
         pass
 
@@ -16,5 +18,7 @@ class producto(models.Model):
     unidades_disponibles = models.IntegerField()
     precio_unitario = models.FloatField()
     
+    def __str__(self):
+        return self.nombre
     def hay_unidades(unidades_disponibles):
         return True if unidades_disponibles > 0 else False
