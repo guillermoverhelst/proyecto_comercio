@@ -4,9 +4,16 @@
 </head>
 <body>
 	<h1>Formulario de registro</h1>
-	<form action="/registro/" method="POST">{% csrf_token %}
+	<form action="/registro/" method="POST">
+		{% csrf_token %}
 		{{form}}
 		<input type="submit" value="Registrarse">
 	</form>
+
+	<form method="post" action="/navegar_inicio_sesion">{% csrf_token %}
+		<label for="clave">Ir a:</label>
+		<button type="submit" formaction="{% url 'inicio_sesion' %}">Iniciar sesión</button>
+	</form>
+
 </body>
 </html>

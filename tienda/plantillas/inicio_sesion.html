@@ -4,7 +4,7 @@
 </head>
 <body>
 	<h1>Formulario de inicio de sesión</h1>
-	<form action="/inicio_sesion/" method="post">
+	<form action="{% url 'productos' %}" method="post">{% csrf_token %}
 		<label for="correo">Correo electrónico:</label>
 		<input type="email" id="correo" name="correo" required><br><br>
 		
@@ -13,5 +13,11 @@
 		
 		<input type="submit" value="Iniciar sesión">
 	</form>
+
+	<form method="post" action="/navegar_registro">{% csrf_token %}
+		<label for="clave">Ir a:</label>
+		<button type="submit" formaction="{% url 'registro' %}">Registrarse</button>
+	</form>
+	
 </body>
 </html>

@@ -18,7 +18,8 @@ from django.urls import path
 from tienda import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('productos/', views.productos),
-    path('registro/', views.registro),
-    path('', views.plt_inicio_sesion),
+    path('', views.plt_inicio_sesion, name='inicio_sesion'),
+    path('productos/', views.productos, name="productos"),
+    path('registro/', views.registro, name='registro'),
+    path('carrito/', views.carrito, name='carrito'),
 ]
