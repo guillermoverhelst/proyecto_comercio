@@ -7,8 +7,6 @@ def productos(request):
 
 def registro(request):
     return render(request, "registro.html")
-
-
     
 def inicio_sesion(request):
     return render(request,"inicio_sesion.html")
