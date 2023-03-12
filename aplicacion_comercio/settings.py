@@ -57,7 +57,7 @@ ROOT_URLCONF = 'aplicacion_comercio.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['D:/Escritorio/proyecto_enfasis/aplicacion_comercio/aplicacion_comercio/plantillas'],
+        'DIRS': ['D:/Escritorio/proyecto_enfasis/aplicacion_comercio/tienda/plantillas'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

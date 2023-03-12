@@ -10,5 +10,5 @@ class producto_admin(admin.ModelAdmin):
     list_display=("sku","nombre","unidades_disponibles","precio_unitario")
     search_fields=("sku","nombre","unidades_disponibles","precio_unitario")
 
-admin.site.register(usuario,"usuario_admin")
-admin.site.register(producto,"producto_admin")
+admin.site.register(usuario,usuario_admin)
+admin.site.register(producto,producto_admin) 

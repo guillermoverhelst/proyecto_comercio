@@ -1,11 +1,21 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-#from usuarios import usuario
+from tienda.models import usuario,producto
+from tienda.forms import UsuarioForm
 def productos(request):
-    return render(request, "productos.html")
+    productos = producto.objects.all()
+    return render(request, "productos.html",{"producto":productos})
 
 def registro(request):
-    return render(request, "registro.html")
+    formulario = {'form': UsuarioForm()}
+    if request.method == 'POST':
+        datos = UsuarioForm(data = request.POST)
+        if datos.is_valid():
+            datos.save()
+            
+        
+    return render(request, "registro.html",formulario)
     
-def inicio_sesion(request):
+def plt_inicio_sesion(request):
     return render(request,"inicio_sesion.html")
+

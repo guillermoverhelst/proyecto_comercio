@@ -6,11 +6,10 @@
     <h1>Lista de productos</h1>
     <p>
         <ul>
-            <li>Producto 1</li>
-            <li>Producto 2</li>
-            <li>Producto 3</li>
-            <li>Producto 4</li>
-          </ul>
+          {% for i in producto %}
+            <li>SKU: {{i.sku}} &nbsp; Nombre: {{i.nombre}} &nbsp; Descripcion: {{i.descripcion}} &nbsp; Unidades Disponibles: {{i.unidades_disponibles}} &nbsp; Precio Unitario: {{i.precio_unitario}}</li>
+          {% endfor %}
+        </ul>
     </p>
   </body>
 </html>
