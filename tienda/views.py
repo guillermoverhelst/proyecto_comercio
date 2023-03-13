@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from tienda.models import usuario, producto
-from tienda.forms import UsuarioForm
+from tienda.forms import UsuarioForm,InicioSesionForm
 import json
 
 global productos_carrito
@@ -31,7 +31,19 @@ def registro(request):
     return render(request, "registro.html",formulario)
     
 def plt_inicio_sesion(request):
-    return render(request,"inicio_sesion.html")
+    formulario = {'form': InicioSesionForm()}
+    usuarios = usuario.objects.all() 
+    if request.method == 'POST':
+        datos = InicioSesionForm(data = request.POST)
+        if datos.is_valid():
+            correo = datos.cleaned_data['correo']
+            clave = datos.cleaned_data['clave']
+            for i in usuarios:
+                if correo == i.correo and clave == i.clave:
+                    return redirect(to = 'productos')
+               
+    return render(request,"inicio_sesion.html",formulario)
+
 
 def agregar_a_carrito(request):
     global productos_carrito

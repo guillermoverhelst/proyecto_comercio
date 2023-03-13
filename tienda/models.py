@@ -7,7 +7,7 @@ class usuario(models.Model):
     clave = models.CharField(max_length=20)  
     
     def __str__(self):
-        return self.nombre
+        return self.nombre 
     def agregar_producto_a_carrito(producto,cantidad):
         pass
 
