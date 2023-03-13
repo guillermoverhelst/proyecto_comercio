@@ -6,9 +6,105 @@
 	<h1>Carrito</h1>
 
 	<form method="post" action="/navegar_productos">{% csrf_token %}
-		<label for="clave">Ir a:</label>
 		<button type="submit" formaction="{% url 'productos' %}">Volver a los productos</button>
 	</form>
 
+    <p>
+        <label>Productos normales</label>
+        <table>
+          <tr>
+            <th>Nombre.</th>
+            <th>Descripcion.</th>
+            <th>cantidad.</th>
+            <th>Precio unitario.</th>
+            <th>Accion.</th>
+          </tr>
+          {% for i in producto_EA %}
+          <tr>
+              <td>{{i.nombre}}</td>
+              <td>{{i.descripcion}}</td>
+              <td>{{i.unidades_disponibles}}</td>
+              <td>{{i.precio_unitario}}</td>
+              <td><button onclick="obtener_informacion(this, '{{ i.sku }}', '{{ i.nombre }}', '{{ i.unidades_disponibles }}')">-</button></td>          
+          </tr>
+          {% endfor %}
+        </table>
+  <br>
+  <br>
+  <br>
+      <label>Productos de peso</label>
+        <table>
+          <tr>
+            <th>Nombre.</th>
+            <th>Descripcion.</th>
+            <th>cantidad. (kg).</th>
+            <th>Precio unitario.</th>
+            <th>Accion.</th>
+          </tr>
+          {% for i in producto_WE %}
+          <tr>
+              <td>{{i.nombre}}</td>
+              <td>{{i.descripcion}}</td>
+              <td>{{i.unidades_disponibles}}</td>
+              <td>{{i.precio_unitario}}</td>
+              <td><button onclick="obtener_informacion(this, '{{ i.sku }}', '{{ i.nombre }}', '{{ i.unidades_disponibles }}')">-</button></td>          
+          </tr>
+          {% endfor %}
+        </table>
+  <br>
+  <br>
+  <br>
+        <label>Productos de descuento especial</label>
+        <table>
+          <tr>
+            <th>Nombre.</th>
+            <th>Descripcion.</th>
+            <th>cantidad.</th>
+            <th>Precio unitario.</th>
+            <th>Accion.</th>
+          </tr>
+          {% for i in producto_SP %}
+          <tr>
+              <td>{{i.nombre}}</td>
+              <td>{{i.descripcion}}</td>
+              <td>{{i.unidades_disponibles}}</td>
+              <td>{{i.precio_unitario}}</td>
+              <td><button onclick="obtener_informacion(this, '{{ i.sku }}', '{{ i.nombre }}', '{{ i.unidades_disponibles }}')">-</button></td>          
+          </tr>
+          {% endfor %}
+        </table>
+      </p>
+
 </body>
 </html>
+
+<style>
+    div.columnas {
+      -webkit-column-count: 5; /* Número de columnas */
+      -moz-column-count: 5;
+      column-count: 5;
+      -webkit-column-width: 20%; /* Ancho de cada columna */
+      -moz-column-width: 50%;
+      column-width: 30%;
+      -webkit-column-gap: 0px; /* Espacio entre columnas */
+      -moz-column-gap: 0px;
+      column-gap: 0px;
+    }
+    
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+      th {
+        background-color: #4CAF50;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+    </style>

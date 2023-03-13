@@ -21,5 +21,8 @@ urlpatterns = [
     path('', views.plt_inicio_sesion, name='inicio_sesion'),
     path('productos/', views.productos, name="productos"),
     path('registro/', views.registro, name='registro'),
-    path('carrito/', views.carrito, name='carrito'),
+    path('agregar_a_carrito/', views.agregar_a_carrito, name='agregar_a_carrito'),
+    path('mostrar_carrito/', views.mostrar_carrito, name='mostrar_carrito'),
+
+    
 ]

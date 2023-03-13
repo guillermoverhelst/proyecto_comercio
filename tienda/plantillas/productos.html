@@ -1,12 +1,11 @@
 <html>
   <head>
     <title>Lista de productos</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
   </head>
   <body>
     <h1>Lista de productos</h1>
-    <form method="post" action="/navegar_registro">{% csrf_token %}
-      <button type="submit" formaction="{% url 'carrito' %}">Ver carrito</button>
-    </form>
+    <button onclick="miFuncion()">Ver carrito</button>
     <p>
       <label>Productos normales</label>
       <table>
@@ -25,7 +24,7 @@
             <td>{{i.descripcion}}</td>
             <td>{{i.unidades_disponibles}}</td>
             <td>{{i.precio_unitario}}</td>
-            <td>xd</td>          
+            <td><button onclick="obtener_informacion(this, '{{ i.sku }}', '{{ i.nombre }}', '{{ i.unidades_disponibles }}')">+</button></td>          
         </tr>
         {% endfor %}
       </table>
@@ -49,7 +48,7 @@
             <td>{{i.descripcion}}</td>
             <td>{{i.unidades_disponibles}}</td>
             <td>{{i.precio_unitario}}</td>
-            <td>xd</td>          
+            <td><button onclick="obtener_informacion(this, '{{ i.sku }}', '{{ i.nombre }}', '{{ i.unidades_disponibles }}')">+</button></td>          
         </tr>
         {% endfor %}
       </table>
@@ -73,13 +72,76 @@
             <td>{{i.descripcion}}</td>
             <td>{{i.unidades_disponibles}}</td>
             <td>{{i.precio_unitario}}</td>
-            <td>xd</td>          
+            <td><button onclick="obtener_informacion(this, '{{ i.sku }}', '{{ i.nombre }}', '{{ i.unidades_disponibles }}')">+</button></td>          
         </tr>
         {% endfor %}
       </table>
     </p>
   </body>
 </html>
+
+<script>
+  var productos_carrito=[]
+  function obtener_informacion(boton) {
+    var fila = boton.parentNode.parentNode;
+    var celda = fila.getElementsByTagName("td");
+    var codigo = celda[0].innerHTML;
+    var nombre = celda[1].innerHTML;
+    var unidades_disponibles = parseInt(celda[3].innerHTML);
+    
+    mensaje = codigo.includes('WE') ? "Ingrese los gramos que desea comprar" : "Ingrese la cantidad que desea comprar"
+    var cantidad = parseInt(prompt(mensaje))
+  
+    if(codigo.includes('WE')){
+      condicion = ((cantidad/1000) <= unidades_disponibles) ? true : false
+      mensaje_gramos = "gr de "
+      mensaje_gramos2 = "gr"
+    }else{
+      condicion = (cantidad <= unidades_disponibles) ? true : false
+      mensaje_gramos = " "
+      mensaje_gramos2 = " "
+    }
+    if(condicion){
+      restante = codigo.includes('WE') ? unidades_disponibles - (cantidad/1000) : unidades_disponibles - cantidad
+      celda[3].innerHTML = restante;
+      celda[3].style.backgroundColor = "red";
+      celda[5].style.display = (restante == 0) ? "none" : "";
+
+      if(productos_carrito.some(producto => producto.sku === codigo)){
+        for(i = 0; i < productos_carrito.length; i++){
+          if(productos_carrito[i].sku == codigo){
+            productos_carrito[i].cantidad = productos_carrito[i].cantidad + cantidad
+            mensaje = "En el carrito: " + productos_carrito[i].cantidad
+          }
+        }
+      }else{
+        productos_carrito.push({"sku": codigo, "cantidad": cantidad})
+        mensaje = "En el carrito: " + cantidad + mensaje_gramos2
+      }
+      alert("Has agregado " + cantidad + mensaje_gramos + "'" + nombre + "'" + " al carrito.\n" + mensaje);
+    }else{
+      alert("Lo sentimos, no hay suficientes productos");
+    }
+  }
+  function miFuncion(){ 
+    var json_data = JSON.stringify(productos_carrito);
+
+    $.ajax({
+      type: "POST",
+      url: "/agregar_a_carrito/",
+      data: {
+        'data': json_data,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+      },
+      dataType: "json",
+      success: function(data) {
+        console.log(data);
+        window.location.href = data.url;
+      }
+    });
+
+  }
+</script>
 
 <style>
 div.columnas {
