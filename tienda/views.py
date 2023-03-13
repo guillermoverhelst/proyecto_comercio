@@ -3,24 +3,9 @@ from django.shortcuts import render,redirect
 from tienda.models import usuario, producto
 from tienda.forms import UsuarioForm,InicioSesionForm
 import json
+from tienda import functions as f
 
 global productos_carrito
-
-def productos(request):
-    productos = producto.objects.all()
-    productos_EA = []; productos_WE = []; productos_SP = []
-
-    for i in productos:
-        if "EA" in i.sku:
-            productos_EA.append(i)
-
-        if "WE" in i.sku:
-            productos_WE.append(i)
-        
-        if "SP" in i.sku:
-            productos_SP.append(i)
-
-    return render(request, "productos.html",{"producto_EA":productos_EA, "producto_WE":productos_WE, "producto_SP":productos_SP})
 
 def registro(request):
     formulario = {'form': UsuarioForm()}
@@ -45,6 +30,38 @@ def plt_inicio_sesion(request):
                
     return render(request,"inicio_sesion.html",formulario)
 
+def productos(request):
+    productos = producto.objects.all()
+    productos_EA = []; productos_WE = []; productos_SP = []
+    for i in productos:
+        if "EA" in i.sku:
+            productos_EA.append(i)
+
+        if "WE" in i.sku:
+            productos_WE.append(i)
+        
+        if "SP" in i.sku:
+            productos_SP.append(i)
+
+    if 'productos_carrito' in globals():
+        for i in productos_carrito:
+            for j in productos_EA:
+                if j.sku == i['sku']:
+                    j.unidades_disponibles -= i['cantidad']
+                    j.color = "red"
+
+            for k in productos_WE:
+                if k.sku == i['sku']:
+                    k.unidades_disponibles -= (i['cantidad']/1000)
+                    k.color = "red"
+
+            for z in productos_SP:
+                if z.sku == i['sku']:
+                    z.unidades_disponibles -= i['cantidad']
+                    z.color = "red"
+    
+    return render(request, "productos.html",{"producto_EA":productos_EA, "producto_WE":productos_WE, "producto_SP":productos_SP})
+
 def agregar_a_carrito(request):
     global productos_carrito
     if request.method == 'POST':
@@ -66,20 +83,37 @@ def agregar_a_carrito(request):
         return JsonResponse({'status': 'ok', 'url': "/mostrar_carrito/"})
 
 def mostrar_carrito(request):
+    total = 0
     productos = producto.objects.all()
     productos_EA = []; productos_WE = []; productos_SP = []
     for j in productos_carrito:
         for i in productos:
             if "EA" in i.sku and i.sku == j['sku']:
                 i.unidades_disponibles = j['cantidad']
+                i.precio_unitario *= j['cantidad']
+                total += i.precio_unitario
                 productos_EA.append(i)
 
             if "WE" in i.sku and i.sku == j['sku']:
                 i.unidades_disponibles = j['cantidad']
+                i.precio_unitario *= j['cantidad']
+                total += i.precio_unitario
                 productos_WE.append(i)
         
             if "SP" in i.sku and i.sku == j['sku']:
                 i.unidades_disponibles = j['cantidad']
+                if (j['cantidad'] < 3):
+                    i.precio_unitario *= j['cantidad']
+                else:
+                    if (j['cantidad'] < 6):
+                        i.precio_unitario = (i.precio_unitario * j['cantidad']) - ((i.precio_unitario * j['cantidad'])* 0.2)
+                    else:
+                        if(j['cantidad'] < 9):
+                            i.precio_unitario = (i.precio_unitario * j['cantidad']) - ((i.precio_unitario * j['cantidad'])* 0.4)
+                        else:
+                            i.precio_unitario = (i.precio_unitario * j['cantidad']) - ((i.precio_unitario * j['cantidad'])* 0.5)
+
+                total += i.precio_unitario
                 productos_SP.append(i)
 
-    return render(request, "carrito.html",{"producto_EA":productos_EA, "producto_WE":productos_WE, "producto_SP":productos_SP})
+    return render(request, "carrito.html",{"producto_EA":productos_EA, "producto_WE":productos_WE, "producto_SP":productos_SP, "total":f.valor_moneda(total)})

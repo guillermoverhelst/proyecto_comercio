@@ -13,7 +13,7 @@
           <th>Código.</th>
           <th>Nombre.</th>
           <th>Descripcion.</th>
-          <th>unidades dip.</th>
+          <th>Unidades dip.</th>
           <th>Precio unitario.</th>
           <th>Accion.</th>
         </tr>
@@ -22,7 +22,11 @@
             <td>{{i.sku}}</td>
             <td>{{i.nombre}}</td>
             <td>{{i.descripcion}}</td>
-            <td>{{i.unidades_disponibles}}</td>
+            {% if i.color == "red" %}
+              <td style="background-color: red;">{{i.unidades_disponibles}}</td>
+            {% else %}
+              <td>{{i.unidades_disponibles}}</td>
+            {% endif %}
             <td>{{i.precio_unitario}}</td>
             <td><button onclick="obtener_informacion(this, '{{ i.sku }}', '{{ i.nombre }}', '{{ i.unidades_disponibles }}')">+</button></td>          
         </tr>
@@ -37,8 +41,8 @@
           <th>Código.</th>
           <th>Nombre.</th>
           <th>Descripcion.</th>
-          <th>unidades dip. (kg).</th>
-          <th>Precio unitario.</th>
+          <th>Unidades dip. (kg).</th>
+          <th>Precio unitario (Gr).</th>
           <th>Accion.</th>
         </tr>
         {% for i in producto_WE %}
@@ -46,7 +50,11 @@
             <td>{{i.sku}}</td>
             <td>{{i.nombre}}</td>
             <td>{{i.descripcion}}</td>
-            <td>{{i.unidades_disponibles}}</td>
+            {% if i.color == "red" %}
+              <td style="background-color: red;">{{i.unidades_disponibles}}</td>
+            {% else %}
+              <td>{{i.unidades_disponibles}}</td>
+            {% endif %}
             <td>{{i.precio_unitario}}</td>
             <td><button onclick="obtener_informacion(this, '{{ i.sku }}', '{{ i.nombre }}', '{{ i.unidades_disponibles }}')">+</button></td>          
         </tr>
@@ -61,7 +69,7 @@
           <th>Código.</th>
           <th>Nombre.</th>
           <th>Descripcion.</th>
-          <th>unidades dip.</th>
+          <th>Unidades dip.</th>
           <th>Precio unitario.</th>
           <th>Accion.</th>
         </tr>
@@ -70,7 +78,11 @@
             <td>{{i.sku}}</td>
             <td>{{i.nombre}}</td>
             <td>{{i.descripcion}}</td>
-            <td>{{i.unidades_disponibles}}</td>
+            {% if i.color == "red" %}
+              <td style="background-color: red;">{{i.unidades_disponibles}}</td>
+            {% else %}
+              <td>{{i.unidades_disponibles}}</td>
+            {% endif %}
             <td>{{i.precio_unitario}}</td>
             <td><button onclick="obtener_informacion(this, '{{ i.sku }}', '{{ i.nombre }}', '{{ i.unidades_disponibles }}')">+</button></td>          
         </tr>
