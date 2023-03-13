@@ -1,4 +1,4 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import render,redirect
 from tienda.models import usuario, producto
 from tienda.forms import UsuarioForm,InicioSesionForm
@@ -9,6 +9,7 @@ global productos_carrito
 def productos(request):
     productos = producto.objects.all()
     productos_EA = []; productos_WE = []; productos_SP = []
+
     for i in productos:
         if "EA" in i.sku:
             productos_EA.append(i)
@@ -44,7 +45,6 @@ def plt_inicio_sesion(request):
                
     return render(request,"inicio_sesion.html",formulario)
 
-
 def agregar_a_carrito(request):
     global productos_carrito
     if request.method == 'POST':
@@ -52,7 +52,6 @@ def agregar_a_carrito(request):
         lista_diccionarios = json.loads(json_data)
 
         if 'productos_carrito' in globals():
-            print("1")
             for i in lista_diccionarios:
                 
                 diccionario_buscado = next((diccionario for diccionario in productos_carrito if dict(diccionario)['sku'] == i['sku']), None)
@@ -60,19 +59,13 @@ def agregar_a_carrito(request):
                 if diccionario_buscado:
                     diccionario_buscado['cantidad'] = int(diccionario_buscado['cantidad']) + int(i['cantidad'])
                 else:
-                    productos_carrito.append(i)
-                    
+                    productos_carrito.append(i) 
         else:
-            print("2")
             productos_carrito = lista_diccionarios        
-
-        for i in productos_carrito:
-            print(i)
 
         return JsonResponse({'status': 'ok', 'url': "/mostrar_carrito/"})
 
 def mostrar_carrito(request):
-
     productos = producto.objects.all()
     productos_EA = []; productos_WE = []; productos_SP = []
     for j in productos_carrito:
@@ -90,4 +83,3 @@ def mostrar_carrito(request):
                 productos_SP.append(i)
 
     return render(request, "carrito.html",{"producto_EA":productos_EA, "producto_WE":productos_WE, "producto_SP":productos_SP})
-    
