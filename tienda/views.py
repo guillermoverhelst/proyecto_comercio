@@ -48,18 +48,18 @@ def productos(request):
             for j in productos_EA:
                 if j.sku == i['sku']:
                     j.unidades_disponibles -= i['cantidad']
-                    j.color = "red"
+                    j.color = "red" if i['cantidad'] != 0 else ""
 
             for k in productos_WE:
                 if k.sku == i['sku']:
                     k.unidades_disponibles -= (i['cantidad']/1000)
-                    k.color = "red"
+                    k.color = "red" if i['cantidad'] != 0 else ""
 
             for z in productos_SP:
                 if z.sku == i['sku']:
                     z.unidades_disponibles -= i['cantidad']
-                    z.color = "red"
-    
+                    z.color = "red" if i['cantidad'] != 0 else ""
+                    
     return render(request, "productos.html",{"producto_EA":productos_EA, "producto_WE":productos_WE, "producto_SP":productos_SP})
 
 def agregar_a_carrito(request):
@@ -78,7 +78,9 @@ def agregar_a_carrito(request):
                 else:
                     productos_carrito.append(i) 
         else:
-            productos_carrito = lista_diccionarios        
+            productos_carrito = lista_diccionarios
+
+        productos_carrito = f.limpiar_lista(productos_carrito)          
 
         return JsonResponse({'status': 'ok', 'url': "/mostrar_carrito/"})
 
@@ -90,30 +92,44 @@ def mostrar_carrito(request):
         for i in productos:
             if "EA" in i.sku and i.sku == j['sku']:
                 i.unidades_disponibles = j['cantidad']
-                i.precio_unitario *= j['cantidad']
-                total += i.precio_unitario
+                i.valor = i.precio_unitario * j['cantidad']
+                total += i.valor
                 productos_EA.append(i)
 
             if "WE" in i.sku and i.sku == j['sku']:
                 i.unidades_disponibles = j['cantidad']
-                i.precio_unitario *= j['cantidad']
-                total += i.precio_unitario
+                i.valor = i.precio_unitario * j['cantidad']
+                total += i.valor
                 productos_WE.append(i)
         
             if "SP" in i.sku and i.sku == j['sku']:
                 i.unidades_disponibles = j['cantidad']
                 if (j['cantidad'] < 3):
-                    i.precio_unitario *= j['cantidad']
+                    i.valor = i.precio_unitario * j['cantidad']
                 else:
                     if (j['cantidad'] < 6):
-                        i.precio_unitario = (i.precio_unitario * j['cantidad']) - ((i.precio_unitario * j['cantidad'])* 0.2)
+                        i.valor = (i.precio_unitario * j['cantidad']) - ((i.precio_unitario * j['cantidad'])* 0.2)
                     else:
                         if(j['cantidad'] < 9):
-                            i.precio_unitario = (i.precio_unitario * j['cantidad']) - ((i.precio_unitario * j['cantidad'])* 0.4)
+                            i.valor = (i.precio_unitario * j['cantidad']) - ((i.precio_unitario * j['cantidad'])* 0.4)
                         else:
-                            i.precio_unitario = (i.precio_unitario * j['cantidad']) - ((i.precio_unitario * j['cantidad'])* 0.5)
+                            i.valor = (i.precio_unitario * j['cantidad']) - ((i.precio_unitario * j['cantidad'])* 0.5)
 
-                total += i.precio_unitario
+                total += i.valor
                 productos_SP.append(i)
 
     return render(request, "carrito.html",{"producto_EA":productos_EA, "producto_WE":productos_WE, "producto_SP":productos_SP, "total":f.valor_moneda(total)})
+
+def eliminar_de_carrito(request):
+    global productos_carrito
+    if request.method == 'POST':
+        json_data = request.POST.get('data')
+        lista_diccionarios = json.loads(json_data)
+
+        for i in lista_diccionarios:
+            diccionario_buscado = next((diccionario for diccionario in productos_carrito if dict(diccionario)['sku'] == i['sku']), None)
+                
+            if diccionario_buscado:
+                diccionario_buscado['cantidad'] = int(diccionario_buscado['cantidad']) - int(i['cantidad'])
+
+        return JsonResponse({'status': 'ok', 'url': "/productos/"})

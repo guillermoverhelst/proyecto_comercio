@@ -28,7 +28,7 @@
               <td>{{i.unidades_disponibles}}</td>
             {% endif %}
             <td>{{i.precio_unitario}}</td>
-            <td><button onclick="obtener_informacion(this, '{{ i.sku }}', '{{ i.nombre }}', '{{ i.unidades_disponibles }}')">+</button></td>          
+            <td><button onclick="obtener_informacion(this)">+</button></td>          
         </tr>
         {% endfor %}
       </table>
@@ -56,7 +56,7 @@
               <td>{{i.unidades_disponibles}}</td>
             {% endif %}
             <td>{{i.precio_unitario}}</td>
-            <td><button onclick="obtener_informacion(this, '{{ i.sku }}', '{{ i.nombre }}', '{{ i.unidades_disponibles }}')">+</button></td>          
+            <td><button onclick="obtener_informacion(this)">+</button></td>          
         </tr>
         {% endfor %}
       </table>
@@ -84,7 +84,7 @@
               <td>{{i.unidades_disponibles}}</td>
             {% endif %}
             <td>{{i.precio_unitario}}</td>
-            <td><button onclick="obtener_informacion(this, '{{ i.sku }}', '{{ i.nombre }}', '{{ i.unidades_disponibles }}')">+</button></td>          
+            <td><button onclick="obtener_informacion(this)">+</button></td>          
         </tr>
         {% endfor %}
       </table>
@@ -94,6 +94,7 @@
 
 <script>
   var productos_carrito=[]
+
   function obtener_informacion(boton) {
     var fila = boton.parentNode.parentNode;
     var celda = fila.getElementsByTagName("td");
@@ -113,6 +114,7 @@
       mensaje_gramos = " "
       mensaje_gramos2 = " "
     }
+    
     if(condicion){
       restante = codigo.includes('WE') ? unidades_disponibles - (cantidad/1000) : unidades_disponibles - cantidad
       celda[3].innerHTML = restante;
@@ -135,6 +137,7 @@
       alert("Lo sentimos, no hay suficientes productos");
     }
   }
+
   function miFuncion(){ 
     var json_data = JSON.stringify(productos_carrito);
 
