@@ -1,16 +1,26 @@
 from django.http import JsonResponse
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from tienda.models import usuario, producto
-from tienda.forms import UsuarioForm,InicioSesionForm
-import json
+from tienda.forms import UsuarioForm, InicioSesionForm
 from tienda import functions as f
-import pandas as pd
+import json
 
 global productos_carrito
 
-def llenar_bd():
-    #Memo, pasa del json a orm en este metodo, haceme caso, no se te olvide limpiar la bd antes de.
-    print("")
+def llenar_producto():
+    producto.objects.all().delete()
+    with open('tienda/archivos/productos.json','r') as f:
+        jsonproductos = json.load(f)
+    for i in jsonproductos:
+        produc, created = producto.objects.get_or_create(
+            sku=i["sku"],
+            defaults={
+                "nombre": i["nombre"],
+                "descripcion": i["descripcion"],
+                "unidades_disponibles": i["unidades_disponibles"],
+                "precio_unitario": i["precio_unitario"]
+            }
+        )       
 
 def registro(request):
     formulario = {'form': UsuarioForm()}
@@ -36,7 +46,7 @@ def plt_inicio_sesion(request):
     return render(request,"inicio_sesion.html",formulario)
 
 def productos(request):
-    llenar_bd()
+    llenar_producto()
     productos = producto.objects.all()
     productos_EA = []; productos_WE = []; productos_SP = []
     for i in productos:
@@ -132,29 +142,31 @@ def eliminar_de_carrito(request):
         json_data = request.POST.get('data')
         lista_diccionarios = json.loads(json_data)
 
-        for i in lista_diccionarios:
-            diccionario_buscado = next((diccionario for diccionario in productos_carrito if dict(diccionario)['sku'] == i['sku']), None)
-                
-            if diccionario_buscado:
-                diccionario_buscado['cantidad'] = int(diccionario_buscado['cantidad']) - int(i['cantidad'])
+        productos_carrito = f.eliminar_elementos_carrito(lista_diccionarios, productos_carrito)
 
         return JsonResponse({'status': 'ok', 'url': "/productos/"})
     
 def pagar_carrito(request):
     global productos_carrito
+    objeto_restar_stock = 0
 
     if request.method == 'POST':
         json_data = request.POST.get('data')
+        valor = request.POST.get('valor')
         lista_diccionarios = json.loads(json_data)
         productos_carrito = f.limpiar_lista(productos_carrito)
-        for i in lista_diccionarios:
-            diccionario_buscado = next((diccionario for diccionario in productos_carrito if dict(diccionario)['sku'] == i['sku']), None)
-                
-            if diccionario_buscado:
-                diccionario_buscado['cantidad'] = int(diccionario_buscado['cantidad']) - int(i['cantidad'])
 
-        for i in lista_diccionarios:
+        productos_carrito = f.eliminar_elementos_carrito(lista_diccionarios, productos_carrito)
 
-            print("hola")
+        for i in productos_carrito:
+            objeto_restar_stock = producto.objects.get(sku=i['sku'])
+            objeto_restar_stock.unidades_disponibles -= (i['cantidad']/1000) if ("WE") in i['sku'] else i['cantidad']
+            
+            objeto_restar_stock.save()
 
-        return JsonResponse({'status': 'ok', 'url': "/mostrar_carrito/"})
+        del(productos_carrito)
+
+        f.actualizar_json()
+        f.actualizar_total_tienda(int((valor.split(":")[1][2:]).replace(",", "")))
+
+        return JsonResponse({'status': 'ok', 'url': "/productos/"})

@@ -8,14 +8,12 @@ class usuario(models.Model):
     
     def __str__(self):
         return self.nombre 
-    def agregar_producto_a_carrito(producto,cantidad):
-        pass
 
 class producto(models.Model):   
     sku = models.CharField(max_length=20)
     nombre = models.CharField(max_length=50)
     descripcion = models.CharField(max_length=50)
-    unidades_disponibles = models.IntegerField()
+    unidades_disponibles = models.FloatField()
     precio_unitario = models.FloatField()
     
     def __str__(self):

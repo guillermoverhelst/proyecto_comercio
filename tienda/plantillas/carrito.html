@@ -201,17 +201,18 @@
 
   function pagar_carrito(){
     var json_data = JSON.stringify(productos_carrito);
-
+    var label_valor = document.getElementById("valor_total_label").innerHTML;
     $.ajax({
       type: "POST",
       url: "/pagar_carrito/",
       data: {
         'data': json_data,
+        'valor': label_valor,
         'csrfmiddlewaretoken': '{{ csrf_token }}'
       },
       dataType: "json",
       success: function(data) {
-        console.log(data);
+        alert("Has pagado un " + label_valor + " con exito.\nMuchas gracias, volveras a los productos para que continues comprando");
         window.location.href = data.url;
       }
     });
