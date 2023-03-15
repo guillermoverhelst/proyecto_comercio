@@ -1,0 +1,25 @@
+[
+    {   
+        "sku": "EA100",
+        "nombre": "jabon",
+        "descripcion": "lo limpia todo",
+        "unidades_disponibles": 5,
+        "precio_unitario": 200
+    },
+    {
+        "sku": "WE120",
+        "nombre": "arroz",
+        "descripcion": "arroz sabroso",
+        "unidades_disponibles": 12,
+        "precio_unitario": 100
+
+    },
+    {
+        "sku": "SP899",
+        "nombre": "limon",
+        "descripcion": "bien jugoso",
+        "unidades_disponibles": 10,
+        "precio_unitario": 89
+    }
+
+]

@@ -8,8 +8,7 @@ class usuario(models.Model):
     
     def __str__(self):
         return self.nombre 
-    def agregar_producto_a_carrito(producto,cantidad):
-        pass
+  
 
 class producto(models.Model):   
     sku = models.CharField(max_length=20)

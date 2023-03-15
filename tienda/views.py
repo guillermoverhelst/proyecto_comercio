@@ -7,6 +7,21 @@ from tienda import functions as f
 
 global productos_carrito
 
+def llenar_producto():
+    with open('tienda/archivos/productos.json','r') as f:
+        jsonproductos = json.load(f)
+    for i in jsonproductos:
+        produc, created = producto.objects.get_or_create(
+            sku=i["sku"],
+            defaults={
+                "nombre": i["nombre"],
+                "descripcion": i["descripcion"],
+                "unidades_disponibles": i["unidades_disponibles"],
+                "precio_unitario": i["precio_unitario"]
+            }
+        )       
+
+
 def registro(request):
     formulario = {'form': UsuarioForm()}
     if request.method == 'POST':
@@ -31,6 +46,7 @@ def plt_inicio_sesion(request):
     return render(request,"inicio_sesion.html",formulario)
 
 def productos(request):
+    llenar_producto()
     productos = producto.objects.all()
     productos_EA = []; productos_WE = []; productos_SP = []
     for i in productos:
