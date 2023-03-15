@@ -4,8 +4,13 @@ from tienda.models import usuario, producto
 from tienda.forms import UsuarioForm,InicioSesionForm
 import json
 from tienda import functions as f
+import pandas as pd
 
 global productos_carrito
+
+def llenar_bd():
+    #Memo, pasa del json a orm en este metodo, haceme caso, no se te olvide limpiar la bd antes de.
+    print("")
 
 def registro(request):
     formulario = {'form': UsuarioForm()}
@@ -31,6 +36,7 @@ def plt_inicio_sesion(request):
     return render(request,"inicio_sesion.html",formulario)
 
 def productos(request):
+    llenar_bd()
     productos = producto.objects.all()
     productos_EA = []; productos_WE = []; productos_SP = []
     for i in productos:
@@ -133,3 +139,22 @@ def eliminar_de_carrito(request):
                 diccionario_buscado['cantidad'] = int(diccionario_buscado['cantidad']) - int(i['cantidad'])
 
         return JsonResponse({'status': 'ok', 'url': "/productos/"})
+    
+def pagar_carrito(request):
+    global productos_carrito
+
+    if request.method == 'POST':
+        json_data = request.POST.get('data')
+        lista_diccionarios = json.loads(json_data)
+        productos_carrito = f.limpiar_lista(productos_carrito)
+        for i in lista_diccionarios:
+            diccionario_buscado = next((diccionario for diccionario in productos_carrito if dict(diccionario)['sku'] == i['sku']), None)
+                
+            if diccionario_buscado:
+                diccionario_buscado['cantidad'] = int(diccionario_buscado['cantidad']) - int(i['cantidad'])
+
+        for i in lista_diccionarios:
+
+            print("hola")
+
+        return JsonResponse({'status': 'ok', 'url': "/mostrar_carrito/"})

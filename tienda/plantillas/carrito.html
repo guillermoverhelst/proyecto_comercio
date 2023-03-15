@@ -5,7 +5,7 @@
 </head>
 <body>
 	<h1>Carrito</h1>
-  <button onclick="miFuncion()">Ver carrito</button>
+  <button onclick="miFuncion()">Volver a productos</button>
     <p>
         <label>Productos normales</label>
         <table>
@@ -84,6 +84,7 @@
         </table>
       </p>
   <h1 id="valor_total_label">Valor total: {{ total }}</h1>
+  <button onclick="pagar_carrito()">Pagar carrito</button>
 </body>
 </html>
 
@@ -116,8 +117,8 @@
     if(condicion){
       restante = unidades_disponibles - cantidad
       celda[3].innerHTML = restante;
-      a_restar = (cantidad * precio_unitario)
-      celda[5].innerHTML = restante * precio_unitario;
+      celda[5].innerHTML = codigo.includes('SP') ? calcular_descuento(unidades_disponibles, cantidad, precio_unitario) : restante * precio_unitario;
+      a_restar = codigo.includes('SP') ? valor - calcular_descuento(unidades_disponibles, cantidad, precio_unitario) : (cantidad * precio_unitario)
 
       document.getElementById("valor_total_label").innerHTML = "Valor total: " + valor_moneda((label_valor - a_restar).toString());
 
@@ -142,7 +143,7 @@
     }
   }
 
-  function miFuncion(){ 
+  function miFuncion(){
     var json_data = JSON.stringify(productos_carrito);
 
     $.ajax({
@@ -179,6 +180,42 @@
     return "$"+nuevo_valor
   }
 
+  function calcular_descuento(unidades_disponibles, cantidad, precio_unitario){
+    restante = unidades_disponibles - cantidad
+    valor = 0
+    if (restante < 3){
+      valor = precio_unitario * restante
+    }else{
+      if (restante < 6){
+        valor = (precio_unitario * restante) - ((precio_unitario * restante) * 0.2)
+      }else{
+        if(restante < 9){
+          valor = (precio_unitario * restante) - ((precio_unitario * restante) * 0.4)
+        }else{
+          valor = (precio_unitario * restante) - ((precio_unitario * restante) * 0.5)
+        }
+      }
+    }
+    return valor
+  }
+
+  function pagar_carrito(){
+    var json_data = JSON.stringify(productos_carrito);
+
+    $.ajax({
+      type: "POST",
+      url: "/pagar_carrito/",
+      data: {
+        'data': json_data,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+      },
+      dataType: "json",
+      success: function(data) {
+        console.log(data);
+        window.location.href = data.url;
+      }
+    });
+  }
 </script>
 <style>
     table {
