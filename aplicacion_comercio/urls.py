@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from tienda import views
+from django.urls import path
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +28,7 @@ urlpatterns = [
     path('mostrar_carrito/', views.mostrar_carrito, name='mostrar_carrito'),
     path('eliminar_de_carrito/', views.eliminar_de_carrito, name='eliminar_de_carrito'),
     path('pagar_carrito/', views.pagar_carrito, name='pagar_carrito'),
+    path('auth.js', views.auth_js, name='auth_js'),
 ]
+
+urlpatterns += staticfiles_urlpatterns()

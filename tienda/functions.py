@@ -35,7 +35,7 @@ def actualizar_json():
     #serialized_objects = serializers.serialize('json', my_objects, use_natural_foreign_keys=True)
     #deserialized_objects = json.loads(serialized_objects)
 
-    with open(r"C:\Users\LENOVO\Desktop\workspace\tienda_enfasis_r\proyecto_comercio\tienda\archivos\productos.json", 'w') as outfile:
+    with open(r"C:\Users\LENOVO\Desktop\workspace\Evertec\proyecto_comercio\tienda\archivos\productos.json", 'w') as outfile:
         #json.dump(deserialized_objects, outfile)
         outfile.write(serialized_objects)
 
@@ -58,11 +58,11 @@ def serialize_objects(objs):
 
 def actualizar_total_tienda(nuevo_total):
 
-    with open('tienda/archivos/total.txt', 'r') as file:
+    with open('C:/Users/LENOVO/Desktop/workspace/Evertec/proyecto_comercio/tienda/archivos/total.txt', 'r') as file:
         total = int(file.read())
     
     total += nuevo_total
 
-    with open('tienda/archivos/total.txt', 'w') as file:
+    with open('C:/Users/LENOVO/Desktop/workspace/Evertec/proyecto_comercio/tienda/archivos/total.txt', 'w') as file:
         file.write('')
         file.write(str(total))

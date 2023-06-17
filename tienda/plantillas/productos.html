@@ -31,64 +31,7 @@
             <td><button onclick="obtener_informacion(this)">+</button></td>          
         </tr>
         {% endfor %}
-      </table>
-<br>
-<br>
-<br>
-    <label>Productos de peso</label>
-      <table>
-        <tr>
-          <th>Código.</th>
-          <th>Nombre.</th>
-          <th>Descripcion.</th>
-          <th>Unidades dip. (kg).</th>
-          <th>Precio unitario (Gr).</th>
-          <th>Accion.</th>
-        </tr>
-        {% for i in producto_WE %}
-        <tr>
-            <td>{{i.sku}}</td>
-            <td>{{i.nombre}}</td>
-            <td>{{i.descripcion}}</td>
-            {% if i.color == "red" %}
-              <td style="background-color: red;">{{i.unidades_disponibles}}</td>
-            {% else %}
-              <td>{{i.unidades_disponibles}}</td>
-            {% endif %}
-            <td>{{i.precio_unitario}}</td>
-            <td><button onclick="obtener_informacion(this)">+</button></td>          
-        </tr>
-        {% endfor %}
-      </table>
-<br>
-<br>
-<br>
-      <label>Productos de descuento especial</label>
-      <table>
-        <tr>
-          <th>Código.</th>
-          <th>Nombre.</th>
-          <th>Descripcion.</th>
-          <th>Unidades dip.</th>
-          <th>Precio unitario.</th>
-          <th>Accion.</th>
-        </tr>
-        {% for i in producto_SP %}
-        <tr>
-            <td>{{i.sku}}</td>
-            <td>{{i.nombre}}</td>
-            <td>{{i.descripcion}}</td>
-            {% if i.color == "red" %}
-              <td style="background-color: red;">{{i.unidades_disponibles}}</td>
-            {% else %}
-              <td>{{i.unidades_disponibles}}</td>
-            {% endif %}
-            <td>{{i.precio_unitario}}</td>
-            <td><button onclick="obtener_informacion(this)">+</button></td>          
-        </tr>
-        {% endfor %}
-      </table>
-    </p>
+      </table>    </p>
   </body>
 </html>
 

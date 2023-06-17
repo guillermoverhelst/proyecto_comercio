@@ -4,15 +4,21 @@ from tienda.models import usuario, producto
 from tienda.forms import UsuarioForm, InicioSesionForm
 from tienda import functions as f
 import json
+from django.http import HttpResponse
 
 global productos_carrito
 
+def auth_js(request):
+    with open('static/auth.js', 'r') as file:
+        response = HttpResponse(content=file.read(), content_type='application/javascript')
+    return response
+
 def llenar_producto():
     producto.objects.all().delete()
-    with open('tienda/archivos/productos.json','r') as f:
+    with open('C:/Users/LENOVO/Desktop/workspace/Evertec/proyecto_comercio/tienda/archivos/productos.json','r') as f:
         jsonproductos = json.load(f)
     for i in jsonproductos:
-        produc, created = producto.objects.get_or_create(
+        product, created = producto.objects.get_or_create(
             sku=i["sku"],
             defaults={
                 "nombre": i["nombre"],
@@ -33,7 +39,7 @@ def registro(request):
     
 def plt_inicio_sesion(request):
     formulario = {'form': InicioSesionForm()}
-    usuarios = usuario.objects.all() 
+    usuarios = usuario.objects.all()
     if request.method == 'POST':
         datos = InicioSesionForm(data = request.POST)
         if datos.is_valid():
@@ -48,16 +54,10 @@ def plt_inicio_sesion(request):
 def productos(request):
     llenar_producto()
     productos = producto.objects.all()
-    productos_EA = []; productos_WE = []; productos_SP = []
+    productos_EA = []
     for i in productos:
         if "EA" in i.sku:
             productos_EA.append(i)
-
-        if "WE" in i.sku:
-            productos_WE.append(i)
-        
-        if "SP" in i.sku:
-            productos_SP.append(i)
 
     if 'productos_carrito' in globals():
         for i in productos_carrito:
@@ -65,18 +65,8 @@ def productos(request):
                 if j.sku == i['sku']:
                     j.unidades_disponibles -= i['cantidad']
                     j.color = "red" if i['cantidad'] != 0 else ""
-
-            for k in productos_WE:
-                if k.sku == i['sku']:
-                    k.unidades_disponibles -= (i['cantidad']/1000)
-                    k.color = "red" if i['cantidad'] != 0 else ""
-
-            for z in productos_SP:
-                if z.sku == i['sku']:
-                    z.unidades_disponibles -= i['cantidad']
-                    z.color = "red" if i['cantidad'] != 0 else ""
                     
-    return render(request, "productos.html",{"producto_EA":productos_EA, "producto_WE":productos_WE, "producto_SP":productos_SP})
+    return render(request, "productos.html",{"producto_EA":productos_EA})
 
 def agregar_a_carrito(request):
     global productos_carrito
@@ -103,7 +93,7 @@ def agregar_a_carrito(request):
 def mostrar_carrito(request):
     total = 0
     productos = producto.objects.all()
-    productos_EA = []; productos_WE = []; productos_SP = []
+    productos_EA = []
     for j in productos_carrito:
         for i in productos:
             if "EA" in i.sku and i.sku == j['sku']:
@@ -112,29 +102,7 @@ def mostrar_carrito(request):
                 total += i.valor
                 productos_EA.append(i)
 
-            if "WE" in i.sku and i.sku == j['sku']:
-                i.unidades_disponibles = j['cantidad']
-                i.valor = i.precio_unitario * j['cantidad']
-                total += i.valor
-                productos_WE.append(i)
-        
-            if "SP" in i.sku and i.sku == j['sku']:
-                i.unidades_disponibles = j['cantidad']
-                if (j['cantidad'] < 3):
-                    i.valor = i.precio_unitario * j['cantidad']
-                else:
-                    if (j['cantidad'] < 6):
-                        i.valor = (i.precio_unitario * j['cantidad']) - ((i.precio_unitario * j['cantidad'])* 0.2)
-                    else:
-                        if(j['cantidad'] < 9):
-                            i.valor = (i.precio_unitario * j['cantidad']) - ((i.precio_unitario * j['cantidad'])* 0.4)
-                        else:
-                            i.valor = (i.precio_unitario * j['cantidad']) - ((i.precio_unitario * j['cantidad'])* 0.5)
-
-                total += i.valor
-                productos_SP.append(i)
-
-    return render(request, "carrito.html",{"producto_EA":productos_EA, "producto_WE":productos_WE, "producto_SP":productos_SP, "total":f.valor_moneda(total)})
+    return render(request, "carrito.html",{"producto_EA":productos_EA, "total":f.valor_moneda(total)})
 
 def eliminar_de_carrito(request):
     global productos_carrito
@@ -160,7 +128,7 @@ def pagar_carrito(request):
 
         for i in productos_carrito:
             objeto_restar_stock = producto.objects.get(sku=i['sku'])
-            objeto_restar_stock.unidades_disponibles -= (i['cantidad']/1000) if ("WE") in i['sku'] else i['cantidad']
+            objeto_restar_stock.unidades_disponibles -= i['cantidad']
             
             objeto_restar_stock.save()
 
