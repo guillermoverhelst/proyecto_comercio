@@ -4,7 +4,8 @@ import json
 import pandas as pd
 from io import StringIO
 
-def valor_moneda(valor):
+"""Pasar de un valor numerico a un string: 1000 => $1,000"""
+def moneda_valorm(valor):
     valor = list(str(int(valor))[::-1])
     nuevo_valor = ""
     
@@ -12,6 +13,10 @@ def valor_moneda(valor):
     nuevo_valor = (nuevo_valor.replace(",", "", 1) if nuevo_valor.startswith(",") else nuevo_valor)
 
     return '$' + nuevo_valor[::-1]
+
+def valorm_moneda(valor):
+    valor = valor.split("$")[1]
+    return valor.replace(",", "")
 
 def limpiar_lista(productos_carrito):
     for i in productos_carrito:
@@ -34,8 +39,8 @@ def actualizar_json():
     serialized_objects = serialize_objects(my_objects)
     #serialized_objects = serializers.serialize('json', my_objects, use_natural_foreign_keys=True)
     #deserialized_objects = json.loads(serialized_objects)
-
-    with open(r"C:\Users\LENOVO\Desktop\workspace\Evertec\proyecto_comercio\tienda\archivos\productos.json", 'w') as outfile:
+    
+    with open(r"C:\Users\ET60620\OneDrive - EVERTEC Group, LLC\Desktop\workspace\proyecto_comercio\tienda\archivos\productos.json", 'w') as outfile:
         #json.dump(deserialized_objects, outfile)
         outfile.write(serialized_objects)
 
@@ -58,11 +63,11 @@ def serialize_objects(objs):
 
 def actualizar_total_tienda(nuevo_total):
 
-    with open('C:/Users/LENOVO/Desktop/workspace/Evertec/proyecto_comercio/tienda/archivos/total.txt', 'r') as file:
+    with open('C:/Users/ET60620/OneDrive - EVERTEC Group, LLC/Desktop/workspace/proyecto_comercio/tienda/archivos/total.txt', 'r') as file:
         total = int(file.read())
     
     total += nuevo_total
 
-    with open('C:/Users/LENOVO/Desktop/workspace/Evertec/proyecto_comercio/tienda/archivos/total.txt', 'w') as file:
+    with open('C:/Users/ET60620/OneDrive - EVERTEC Group, LLC/Desktop/workspace/proyecto_comercio/tienda/archivos/total.txt', 'w') as file:
         file.write('')
         file.write(str(total))

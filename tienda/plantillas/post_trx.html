@@ -1,0 +1,84 @@
+<html>
+<head>
+	<title>Transacción concluida</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+</head>
+<body>
+	<h1>Transacción concluida</h1>
+	
+    <label for="respuesta_trx">La transacción fue:</label>
+    <div id="miDiv"></div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <button type="submit" formaction="{% url 'registro' %}">Volver al mercado</button>
+	
+</body>
+</html>
+{% load static %}
+
+<script>
+    window.onload = function() {
+        var json_file = obtener_json_sesion()
+        let storedRequestId = localStorage.getItem("request_id");
+        
+        axios.post('https://checkout-test.placetopay.com/api/session/' + storedRequestId, json_file)
+        .then(response => {
+          let status = response.data.status.status
+          if(status === "PENDING"){
+            alert("PENDING")
+          }
+          if(status === "APPROVED"){
+            const miDiv = document.getElementById('miDiv');
+            miDiv.innerHTML = status;
+          }
+          console.log(response)
+          console.log(status)
+        })
+        .catch(error => {
+          let error_str = String(error.request.response)
+          if(error_str.includes("Error al recuperar la transaccion")){
+            alert("Error")
+          }
+        });
+      };
+
+      function obtener_json_sesion(){
+        var login = "2d9eaf1e662518756a3d78806543af5b"
+        var nonce = generarUUID();
+        let nonceB64 = btoa(nonce.toString());
+    
+        var seed2 = new Date().toISOString()
+    
+        var secretkey = "3YC5brb5eAR4xBGQ";
+    
+        var trankey_woc = (nonce + seed2 + secretkey) //woc = with out codify
+        const hash = CryptoJS.SHA1(trankey_woc);
+        var base64 = CryptoJS.enc.Base64.stringify(hash);
+        
+        var timeout = moment().add(30, 'minutes').format();
+    
+        //Creamos la variable con los datos para el json
+        var sesion = {
+          "auth": {
+            "login": login + "",
+            "tranKey": base64 + "",
+            "nonce": nonceB64 + "",
+            "seed": seed2 + ""
+          }
+        }
+        return(sesion)
+      }
+
+      function generarUUID() {
+        let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+          const r = (Math.random() * 16) | 0,
+            v = c === 'x' ? r : (r & 0x3) | 0x8;
+          return v.toString(16);
+        });
+        return uuid;
+      }
+</script>

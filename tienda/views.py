@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from tienda.models import usuario, producto
+from tienda.models import usuario, producto, producto_temporal
 from tienda.forms import UsuarioForm, InicioSesionForm
 from tienda import functions as f
 import json
@@ -15,7 +15,7 @@ def auth_js(request):
 
 def llenar_producto():
     producto.objects.all().delete()
-    with open('C:/Users/LENOVO/Desktop/workspace/Evertec/proyecto_comercio/tienda/archivos/productos.json','r') as f:
+    with open('C:/Users/ET60620/OneDrive - EVERTEC Group, LLC/Desktop/workspace/proyecto_comercio/tienda/archivos/productos.json','r') as f:
         jsonproductos = json.load(f)
     for i in jsonproductos:
         product, created = producto.objects.get_or_create(
@@ -102,7 +102,7 @@ def mostrar_carrito(request):
                 total += i.valor
                 productos_EA.append(i)
 
-    return render(request, "carrito.html",{"producto_EA":productos_EA, "total":f.valor_moneda(total)})
+    return render(request, "carrito.html",{"producto_EA":productos_EA, "total":f.moneda_valorm(total)})
 
 def eliminar_de_carrito(request):
     global productos_carrito
@@ -124,6 +124,9 @@ def pagar_carrito(request):
         lista_diccionarios = json.loads(json_data)
         productos_carrito = f.limpiar_lista(productos_carrito)
 
+        print("valor:", valor)
+        print("valor:", f.valorm_moneda(valor))
+
         productos_carrito = f.eliminar_elementos_carrito(lista_diccionarios, productos_carrito)
 
         for i in productos_carrito:
@@ -138,3 +141,32 @@ def pagar_carrito(request):
         f.actualizar_total_tienda(int((valor.split(":")[1][2:]).replace(",", "")))
 
         return JsonResponse({'status': 'ok', 'url': "/productos/"})
+    
+def post_trx(request):
+    return render(request,"post_trx.html")
+
+def guardar_carrito(request):
+    global productos_carrito
+    objeto_restar_stock = 0
+
+    if request.method == 'POST':
+        json_data = request.POST.get('data')
+        valor = request.POST.get('valor')
+        request_id = request.POST.get('request_id')
+        lista_diccionarios = json.loads(json_data)
+        productos_carrito = f.limpiar_lista(productos_carrito)
+
+        print("valor:", valor)
+        print("valor:", f.valorm_moneda(valor))
+
+        product, created = producto_temporal.objects.get_or_create(
+            codigo_compra=request_id,
+            defaults={
+                "productos": productos_carrito,
+                "valor": f.valorm_moneda(valor),
+            }
+        )
+
+        del(productos_carrito)
+
+    print("hola")

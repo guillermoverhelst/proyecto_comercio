@@ -2,6 +2,17 @@
 <head>
 	<title>Carrito</title>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/BrowserFS/2.0.0/browserfs.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/BrowserFS/2.0.0/browserfs.min.js"></script>
+  
+
+
+
+
+  
 </head>
 <body>
 	<h1>Carrito</h1>
@@ -32,7 +43,7 @@
         </table>
       </p>
   <h1 id="valor_total_label">Valor total: {{ total }}</h1>
-  <button onclick="pagar_carrito()">Pagar carrito</button>
+  <button onclick="pagar_carrito_wc()">Pagar carrito</button>
 </body>
 </html>
 {% load static %}
@@ -54,7 +65,7 @@
     var label_valor = document.getElementById("valor_total_label").innerHTML;
     label_valor = a_int(label_valor.split(":")[1])
  
-    mensaje = codigo.includes('WE') ? "Ingrese los gramos que desea devolver" : "Ingrese la cantidad que desea devolver"
+    mensaje = "Ingrese la cantidad que desea devolver"
     var cantidad = parseInt(prompt(mensaje))
   
     condicion = (cantidad <= unidades_disponibles) ? true : false
@@ -127,17 +138,17 @@
     return "$"+nuevo_valor
   }
 
-  function pagar_carrito(){
-    request()
-
-    /*var json_data = JSON.stringify(productos_carrito);
+  function guardar_carrito_be(request_id){
+    var json_data = JSON.stringify(productos_carrito);
     var label_valor = document.getElementById("valor_total_label").innerHTML;
+
     $.ajax({
       type: "POST",
-      url: "/pagar_carrito/",
+      url: "/guardar_carrito/",
       data: {
         'data': json_data,
         'valor': label_valor,
+        'request_id': request_id,
         'csrfmiddlewaretoken': '{{ csrf_token }}'
       },
       dataType: "json",
@@ -145,8 +156,116 @@
         alert("Has pagado un " + label_valor + " con exito.\nMuchas gracias, volveras a los productos para que continues comprando");
         window.location.href = data.url;
       }
+    });
+  }
+
+  function pagar_carrito_wc() {
+    var json_file = obtener_json_sesion((document.getElementById("valor_total_label").innerHTML.split("$")[1]).replaceAll(",", ""))
+    console.log(json_file)
+
+    axios.post('https://checkout-test.placetopay.com/api/session', json_file)
+    .then(response => {
+      let request_id = response.data.requestId
+
+      guardar_carrito_be(request_id)
+
+      localStorage.setItem("request_id", request_id);
+      console.log("Guardado en localStorage");
+      
+      let url = response.data.processUrl
+      window.location.href = url;
+    })
+    .catch(error => {
+      /*let error_str = String(error.request.response)
+      if(error_str.includes("El monto dado no se encuentra")){
+        alert("El valor de la compra no puede ser tan bajo")
+      }*/
+      console.log(error)
+    });
+    /*return new Promise(function(resolve, reject) {
+      $.ajax({
+        type: "GET",
+        url: "https://checkout-test.placetopay.com/api/session",
+        data: {
+            json_file,
+        },
+        success: function (data) {
+            console.log("success");
+            console.log(data);
+        },
+        failure: function (data) {
+            console.log("failure");
+            console.log(data);
+        },
     });*/
   }
+
+  function obtener_json_sesion(valor){
+    var login = "2d9eaf1e662518756a3d78806543af5b"
+    var nonce = generarUUID();
+    let nonceB64 = btoa(nonce.toString());
+
+    var seed2 = new Date().toISOString()
+
+    var secretkey = "3YC5brb5eAR4xBGQ";
+
+    var trankey_woc = (nonce + seed2 + secretkey) //woc = with out codify
+    const hash = CryptoJS.SHA1(trankey_woc);
+    var base64 = CryptoJS.enc.Base64.stringify(hash);
+    
+    var timeout = moment().add(30, 'minutes').format();
+
+    //Creamos la variable con los datos para el json
+    var sesion = {
+      "locale": "es_CO",
+      "auth": {
+        "login": login + "",
+        "tranKey": base64 + "",
+        "nonce": nonceB64 + "",
+        "seed": seed2 + ""
+      },
+      "payer": {
+        "document": "1122334455",
+        "documentType": "CC",
+        "name": "Brayan",
+        "surname": "Luján",
+        "company": "Evertec",
+        "email": "brayan.lujan@evertecinc.com",
+        "mobile": "+573111111111",
+        "address": {
+          "street": "Calle falsa 123",
+          "city": "Medellín",
+          "state": "Poblado",
+          "postalCode": "55555",
+          "country": "Colombia",
+          "phone": "+573111111111"
+        }
+      },
+      "payment": {
+        "reference": "11223344556677",
+        "description": "Prueba",
+        "amount": {
+          "currency": "COP",
+          "total": valor
+        }
+      },
+      "expiration": timeout + "",
+      "ipAddress": "127.0.0.1",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.5938.63 Safari/537.36 Edg/116.0.1938.81",
+      "returnUrl": "http://127.0.0.1:8000/post_trx/"
+    }
+    return(sesion)
+  }
+
+  function generarUUID() {
+    let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = (Math.random() * 16) | 0,
+        v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+    return uuid;
+  }
+
 </script>
 <style>
     table {

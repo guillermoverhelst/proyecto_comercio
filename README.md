@@ -1,6 +1,6 @@
 # proyecto_comercio
 
-* Si es la primera vez ejecuta el comando 'python manage.py migrate' en la carpeta raiz del proyecto (.../tienda_enfasis_r/proyecto_comercio)
+* Si es la primera vez, ejecuta el comando 'python manage.py migrate' en la carpeta raiz del proyecto (.../tienda_enfasis_r/proyecto_comercio)
 
 * Carpeta settings configurada para cualquier equipo
 

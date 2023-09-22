@@ -55,8 +55,8 @@ ROOT_URLCONF = 'aplicacion_comercio.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-
-        'DIRS': ['C:/Users/LENOVO/Desktop/workspace/Evertec/proyecto_comercio/tienda/plantillas'], #Para debbug
+                
+        'DIRS': ['C:/Users/ET60620/OneDrive - EVERTEC Group, LLC/Desktop/workspace/proyecto_comercio/tienda/plantillas'], #Para debbug
         #'DIRS': ['tienda/plantillas'], #Sin debbug
         'APP_DIRS': True,
         'OPTIONS': {

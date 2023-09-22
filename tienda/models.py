@@ -20,3 +20,11 @@ class producto(models.Model):
         return self.nombre
     def hay_unidades(unidades_disponibles):
         return True if unidades_disponibles > 0 else False
+    
+class producto_temporal(models.Model):
+    codigo_compra = models.CharField(max_length=15)
+    productos = models.CharField(max_length=100)
+    valor = models.FloatField()
+
+    def __str__(self):
+        return self.codigo_compra

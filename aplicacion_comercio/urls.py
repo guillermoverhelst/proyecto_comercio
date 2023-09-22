@@ -28,6 +28,8 @@ urlpatterns = [
     path('mostrar_carrito/', views.mostrar_carrito, name='mostrar_carrito'),
     path('eliminar_de_carrito/', views.eliminar_de_carrito, name='eliminar_de_carrito'),
     path('pagar_carrito/', views.pagar_carrito, name='pagar_carrito'),
+    path('post_trx/', views.post_trx, name='post_trx'),
+    path('guardar_carrito/', views.guardar_carrito, name='guardar_carrito'),
     path('auth.js', views.auth_js, name='auth_js'),
 ]
 
